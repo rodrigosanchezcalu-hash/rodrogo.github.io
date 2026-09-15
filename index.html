@@ -1,33 +1,36 @@
-<script>
+<!-- Local Audio File -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="harrypotter.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
     // URL Parameter Customization (?name=Her)
     const urlParams = new URLSearchParams(window.location.search);
     const witchName = urlParams.get('name') || 'Beautiful Witch';
     document.getElementById('witch-name').innerText = witchName;
 
-    // Target WhatsApp Phone Number
     const targetPhone = '34624302215';
 
-    // LOCAL MP3 AUDIO CONTROLLER
+    // CONTROLES DE AUDIO
     const bgMusic = document.getElementById('bg-music');
     const audioToggle = document.getElementById('audio-toggle');
     const audioIcon = document.getElementById('audio-icon');
     const audioText = document.getElementById('audio-text');
     let isPlaying = false;
 
-    // Forzar precarga de audio
+    // Cargar el audio
     bgMusic.load();
 
     function playAudio() {
       bgMusic.volume = 0.7;
       const playPromise = bgMusic.play();
-      
       if (playPromise !== undefined) {
         playPromise.then(() => {
           isPlaying = true;
           if (audioIcon) audioIcon.innerText = '🎶';
           if (audioText) audioText.innerText = 'Music On';
         }).catch(err => {
-          console.log("Audio play error:", err);
+          console.log("Audio play blocked:", err);
         });
       }
     }
@@ -47,9 +50,8 @@
       }
     }
 
-    // Open Letter Animation + Play Sound
+    // Abrir carta y reproducir sonido inmediatamente al hacer clic
     function openLetter() {
-      // Intentar reproducir sonido inmediatamente al tocar la carta
       playAudio();
 
       const envelopeWrapper = document.getElementById('envelope-wrapper');
@@ -63,7 +65,7 @@
       }, 700);
     }
 
-    // Evasive "No" Button Spells
+    // Botón evasivo "No"
     const noBtn = document.getElementById('no-btn');
     const spells = [
       "⚡ Obliviate!", 
@@ -101,7 +103,7 @@
       });
     }
 
-    // Acceptance Handler
+    // Aceptar invitación
     function acceptInvitation() {
       const cuisine = document.getElementById('cuisine').value;
       const availability = document.getElementById('availability').value;
@@ -109,21 +111,19 @@
       document.getElementById('res-cuisine').innerText = cuisine;
       document.getElementById('res-time').innerText = availability;
 
-      // Construct WhatsApp Message
       const message = `Hello! 🪄 I accept your magical dinner invitation!\n\n🍲 Feast: ${cuisine}\n📅 Time: ${availability}\n\nSee you soon! ✨`;
       const encodedMsg = encodeURIComponent(message);
       
       const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodedMsg}`;
       document.getElementById('whatsapp-link').href = whatsappUrl;
 
-      // Hide Letter, Show Success
       document.getElementById('letter').style.display = 'none';
       document.getElementById('success-card').style.display = 'block';
 
       launchConfetti();
     }
 
-    // Canvas Confetti
+    // Confeti
     function launchConfetti() {
       const duration = 3 * 1000;
       const end = Date.now() + duration;
@@ -150,7 +150,7 @@
       })();
     }
 
-    // Star Background Animation Canvas
+    // Fondo de estrellas
     const canvas = document.getElementById('stars-canvas');
     const ctx = canvas.getContext('2d');
 
