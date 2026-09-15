@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Hogwarts Letter - Dinner Invitation</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600;700&family=Tangerine:wght@700&family=Outfit:wght@300;400;600&family=MedievalSharp&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Base page reset with iOS viewport fit support */
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #0A0812;
+            color: #F3E5AB;
+            overflow-x: hidden;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            padding-top: var(--sat);
+            padding-bottom: var(--sab);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        html {
+            height: -webkit-fill-available;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        .font-cinzel-dec {
+            font-family: 'Cinzel Decorative', serif;
+        }
+
+        .font-handwriting {
+            font-family: 'Tangerine', cursive;
+        }
+
+        .font-medieval {
+            font-family: 'MedievalSharp', cursive;
+        }
+
+        /* Starry Night Sky Background Canvas */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Parchment Scroll Effect with Aged Edge Shading */
+        .parchment {
+            background: #F4E4BC;
+            background-image: 
+                radial-gradient(#E2C992 1px, transparent 0),
+                radial-gradient(circle at 50% 0%, rgba(139, 90, 43, 0.15) 0%, transparent 70%);
+            background-size: 16px 16px, 100% 100%;
+            color: #2B1A09;
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.9), 
+                0 0 25px rgba(212, 175, 55, 0.25), 
+                inset 0 0 50px rgba(139, 90, 43, 0.35);
+            border: 2px solid #8B5A2B;
+        }
+
+        /* 3D Envelope Container */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+
+        .envelope {
+            position: relative;
+            width: 300px;
+            height: 200px;
+            background: #7A1C1C; /* Gryffindor Deep Burgundy */
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 175, 55, 0.35);
+            cursor: pointer;
+            transition: transform 0.4s ease;
+            touch-action: manipulation;
+        }
+
+        @media (min-width: 640px) {
+            .envelope {
+                width: 420px;
+                height: 270px;
+            }
+        }
+
+        .envelope .flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 120px solid #5C1313;
+            transform-origin: top;
+            transition: transform 0.6s ease 0.2s, z-index 0.2s;
+            z-index: 3;
+        }
+
+        @media (min-width: 640px) {
+            .envelope .flap {
+                border-left-width: 210px;
+                border-right-width: 210px;
+                border-top-width: 155px;
+            }
+        }
+
+        .envelope .wax-seal {
+            position: absolute;
+            top: 95px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 58px;
+            height: 58px;
+            background: radial-gradient(circle, #D4AF37 0%, #8A6D1B 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3E0000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.5);
+            z-index: 4;
+            transition: transform 0.3s ease;
+        }
+
+        @media (min-width: 640px) {
+            .envelope .wax-seal {
+                top: 125px;
+                width: 68px;
+                height: 68px;
+            }
+        }
+
+        /* Sparkle wand animation on touch/cursor */
+        .wand-spark {
+            position: fixed;
+            pointer-events: none;
+            width: 6px;
+            height: 6px;
+            background: #FFF8C6;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+            animation: fadeOut 0.8s linear forwards;
+            z-index: 9999;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.2) translate(0, 20px); }
+        }
+
+        /* Golden Glowing Buttons */
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #AA7C11 100%);
+            color: #1A0F00;
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+        }
+
+        .btn-gold:active {
+            transform: scale(0.97);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+        }
+
+        @media (hover: hover) {
+            .btn-gold:hover {
+                background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 100%);
+                box-shadow: 0 0 25px rgba(212, 175, 55, 0.8);
+                transform: translateY(-2px);
+            }
+        }
+
+        /* Floating Audio Toggle */
+        .audio-control {
+            position: fixed;
+            top: calc(12px + var(--sat));
+            right: 15px;
+            z-index: 100;
+            background: rgba(122, 28, 28, 0.85);
+            border: 1px solid #D4AF37;
+            color: #F3E5AB;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .audio-control:active {
+            transform: scale(0.95);
+        }
+
+        /* Form Controls Styling for iOS compatibility */
+        select, input {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: rgba(255, 255, 255, 0.85);
+            color: #2B1A09;
+            border: 1px solid #8B5A2B;
+            font-size: 16px; /* Prevents iOS auto-zoom on focus */
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-3 sm:p-6 select-none relative">
+
+    <!-- Stars Canvas -->
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- Background Audio Element -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-magical-fantasy-orchestra-708.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Audio Control Button -->
+    <button class="audio-control" id="audio-toggle" onclick="toggleAudio()">
+        <span id="audio-icon">⚡</span> <span id="audio-text">Music On</span>
+    </button>
+
+    <div class="fixed top-4 left-4 text-amber-500/20 text-4xl sm:text-6xl pointer-events-none select-none z-10">⚡</div>
+    <div class="fixed bottom-4 right-4 text-amber-500/20 text-4xl sm:text-6xl pointer-events-none select-none z-10">🧹</div>
+    <div class="fixed top-12 right-8 text-amber-500/20 text-3xl sm:text-4xl pointer-events-none select-none z-10">✨</div>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="w-full max-w-2xl flex flex-col items-center justify-center relative z-10 py-4">
+
+        <!-- ENVELOPE SECTION -->
+        <div id="envelope-section" class="flex flex-col items-center text-center space-y-5 transition-all duration-700 w-full">
+            <div class="space-y-2 px-2">
+                <div class="inline-flex items-center space-x-2 text-amber-400/80 font-cinzel text-xs tracking-widest uppercase bg-amber-950/40 px-3 py-1 rounded-full border border-amber-500/30">
+                    <i class="fa-solid fa-owl"></i>
+                    <span>Special Delivery</span>
+                </div>
+                <h1 class="font-cinzel-dec text-2xl sm:text-4xl md:text-5xl text-amber-300 drop-shadow-[0_2px_10px_rgba(212,175,55,0.5)]">
+                    Hogwarts Acceptance
+                </h1>
+                <p class="text-amber-100/80 font-cinzel text-xs sm:text-sm tracking-widest uppercase">
+                    An Owl Has Arrived With An Urgent Dispatch
+                </p>
+            </div>
+
+            <!-- Envelope Component -->
+            <div class="envelope-wrapper my-6" id="envelope-clickable" onclick="openEnvelope()">
+                <div class="envelope flex items-center justify-center">
+                    <div id="envelope-flap" class="flap"></div>
+                    <div id="envelope-seal" class="wax-seal">
+                        <i class="fa-solid fa-graduation-cap text-xl sm:text-2xl"></i>
+                    </div>
+                    <div class="text-center p-4 sm:p-6 text-amber-200 font-cinzel">
+                        <p class="text-[10px] sm:text-xs uppercase tracking-widest text-amber-400/80 mb-1">Delivered To:</p>
+                        <p class="text-lg sm:text-2xl font-bold tracking-wide text-amber-100 px-2 line-clamp-2" id="recipient-name">A Very Special Witch</p>
+                        <p class="text-[10px] sm:text-xs italic mt-2 text-amber-300/70">Private Room, Astronomy Tower</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="openEnvelope()" class="px-6 py-2.5 rounded-full bg-amber-900/30 border border-amber-500/40 text-amber-300 text-xs sm:text-sm font-cinzel tracking-wider animate-pulse active:scale-95 transition-transform flex items-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Tap the Seal to Break the Spell</span>
+            </button>
+        </div>
+
+        <!-- LETTER SECTION -->
+        <div id="letter-section" class="hidden w-full transition-all duration-700 opacity-0 transform scale-95">
+            <div class="parchment rounded-xl p-5 sm:p-8 relative overflow-hidden">
+                <!-- Hogwarts Crest Header -->
+                <div class="text-center mb-5">
+                    <div class="inline-block p-2.5 sm:p-3 rounded-full border-2 border-amber-900/40 mb-2">
+                        <i class="fa-solid fa-hat-wizard text-3xl sm:text-4xl text-amber-900"></i>
+                    </div>
+                    <h2 class="font-cinzel-dec text-xl sm:text-2xl font-bold text-amber-950 uppercase tracking-widest leading-tight">
+                        Hogwarts School of Witchcraft & Wizardry
+                    </h2>
+                    <p class="font-cinzel text-[10px] sm:text-xs text-amber-900/80 tracking-widest uppercase mt-1">Headmaster's Great Hall Dining Decree</p>
+                    <div class="w-24 sm:w-32 h-0.5 bg-amber-900/30 mx-auto my-3"></div>
+                </div>
+
+                <!-- Letter Body Text -->
+                <div class="font-cinzel text-amber-950 space-y-3 sm:space-y-4 text-xs sm:text-sm leading-relaxed">
+                    <p class="font-bold text-sm sm:text-base">Dearest <span id="letter-recipient-name">Witch</span>,</p>
+                    <p>
+                        We are pleased to inform you that you have been officially selected for an <strong class="text-amber-900 underline decoration-amber-700/50">enchanting dinner date</strong>.
+                    </p>
+                    <p>
+                        Your charm has thoroughly bewitched my mind, and the <i>Sorting Hat</i> has determined that we are an extraordinary match to share delicious food and magical conversation.
+                    </p>
+
+                    <!-- Interactive Preferences Box -->
+                    <div class="bg-amber-900/10 border border-amber-900/30 rounded-lg p-3.5 sm:p-4 my-4 space-y-3 font-sans text-xs">
+                        <div class="flex items-center space-x-2.5 text-amber-950 font-bold border-b border-amber-900/20 pb-1.5 font-cinzel">
+                            <i class="fa-solid fa-scroll text-amber-800"></i>
+                            <span>Customize Our Quest:</span>
+                        </div>
+
+                        <!-- Cuisine Preference -->
+                        <div class="space-y-1">
+                            <label for="cuisine-select" class="block text-amber-900 font-semibold flex items-center space-x-2">
+                                <i class="fa-solid fa-utensils text-amber-800 w-4"></i>
+                                <span>Potion / Feast Cuisine:</span>
+                            </label>
+                            <select id="cuisine-select" class="w-full p-2 rounded-md font-sans text-xs shadow-inner focus:outline-none focus:ring-1 focus:ring-amber-800">
+                                <option value="Delicious Mystery & Fine Dining">✨ Mysterious & Fine Dining</option>
+                                <option value="Italian Feast (Pasta & Wine)">🍝 Italian Feast & Elixirs</option>
+                                <option value="Asian Fusion & Dragon Spices">🥢 Asian Fusion & Spices</option>
+                                <option value="Burgers & Butterbeer Vibes">🍔 Tapas, Burgers & Butterbeer</option>
+                                <option value="Decadent Dessert & Coffee">☕ Sweet Desserts & Magic Brews</option>
+                            </select>
+                        </div>
+
+                        <!-- Preferred Time/Day -->
+                        <div class="space-y-1">
+                            <label for="time-select" class="block text-amber-900 font-semibold flex items-center space-x-2">
+                                <i class="fa-solid fa-clock text-amber-800 w-4"></i>
+                                <span>When Shall the Stars Align?</span>
+                            </label>
+                            <select id="time-select" class="w-full p-2 rounded-md font-sans text-xs shadow-inner focus:outline-none focus:ring-1 focus:ring-amber-800">
+                                <option value="This Friday Evening">🌙 This Friday Evening</option>
+                                <option value="This Saturday Night">✨ This Saturday Night</option>
+                                <option value="This Sunday Sunset">🌅 Sunday Sunset</option>
+                                <option value="Whenever you are free!">🪄 Whenever your schedule allows!</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <p class="text-center font-bold text-sm sm:text-base pt-1 text-amber-900">
+                        Will you honor me with your spellbinding presence?
+                    </p>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 relative min-h-[110px]" id="button-container">
+                    <!-- YES Button -->
+                    <button onclick="acceptInvitation()" class="btn-gold font-cinzel font-bold px-6 py-3.5 rounded-full text-sm sm:text-base w-full sm:w-auto shadow-lg flex items-center justify-center space-x-2 z-20 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-broom"></i>
+                        <span>Accio Date! (I Accept!)</span>
+                    </button>
+
+                    <!-- Evasive NO Button -->
+                    <button id="no-btn" class="bg-red-950/20 active:bg-red-950/40 text-amber-950 border border-amber-900/40 font-cinzel font-semibold px-5 py-2.5 rounded-full text-xs sm:text-sm transition-all duration-200 z-10 w-full sm:w-auto">
+                        <span id="no-btn-text">Decline Offer</span>
+                    </button>
+                </div>
+
+                <!-- Hand-written Footnote -->
+                <p class="text-center font-handwriting text-2xl sm:text-3xl text-amber-900/80 mt-4">
+                    "Mischief Managed... almost!"
+                </p>
+            </div>
+        </div>
+
+        <!-- CELEBRATION SECTION -->
+        <div id="celebration-section" class="hidden w-full text-center space-y-6 transition-all duration-700 opacity-0">
+            <div class="parchment rounded-xl p-6 sm:p-10 shadow-2xl space-y-5 relative">
+                <div class="text-amber-900 text-4xl sm:text-6xl animate-bounce">
+                    <i class="fa-solid fa-glass-cheers"></i>
+                </div>
+
+                <h2 class="font-cinzel-dec text-2xl sm:text-4xl font-bold text-amber-950 leading-tight">
+                    Magical Date Confirmed!
+                </h2>
+
+                <p class="font-handwriting text-3xl sm:text-4xl text-amber-900">
+                    "I solemnly swear that we will have an extraordinary time!"
+                </p>
+
+                <div class="w-20 sm:w-24 h-0.5 bg-amber-900/30 mx-auto"></div>
+
+                <!-- Selected Options Summary -->
+                <div class="bg-amber-900/10 border border-amber-900/20 rounded-lg p-3 text-xs sm:text-sm text-amber-950 space-y-1 text-left font-sans max-w-sm mx-auto">
+                    <p><strong>✨ Chosen Feast:</strong> <span id="summary-cuisine">Fine Dining</span></p>
+                    <p><strong>📅 Chosen Time:</strong> <span id="summary-time">This Weekend</span></p>
+                </div>
+
+                <p class="font-cinzel text-amber-950 text-xs sm:text-sm max-w-md mx-auto">
+                    Our owl has dispatched the confirmation! Tap below to send your acceptance straight to my WhatsApp.
+                </p>
+
+                <!-- WhatsApp Direct Confirmation Button -->
+                <div class="pt-2">
+                    <a id="whatsapp-link" href="#" target="_blank" class="inline-flex items-center space-x-2.5 bg-emerald-700 active:bg-emerald-800 text-white font-cinzel font-bold px-7 py-3.5 rounded-full text-sm sm:text-base shadow-xl transition-all active:scale-95">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                        <span>Send Owl via WhatsApp</span>
+                    </a>
+                </div>
+
+                <p class="text-[10px] sm:text-xs text-amber-900/60 font-cinzel">
+                    Looking forward to our spellbinding evening together ✨
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        /* Audio Player Control */
+        const bgMusic = document.getElementById('bg-music');
+        const audioToggle = document.getElementById('audio-toggle');
+        const audioIcon = document.getElementById('audio-icon');
+        const audioText = document.getElementById('audio-text');
+        let isPlaying = false;
+
+        function toggleAudio() {
+            if (isPlaying) {
+                bgMusic.pause();
+                audioIcon.innerText = '⚡';
+                audioText.innerText = 'Music Off';
+                isPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    audioIcon.innerText = '🎶';
+                    audioText.innerText = 'Music On';
+                    isPlaying = true;
+                }).catch(err => {
+                    console.log("Audio play prevented: ", err);
+                });
+            }
+        }
+
+        function startAudioOnInteraction() {
+            if (!isPlaying) {
+                bgMusic.play().then(() => {
+                    audioIcon.innerText = '🎶';
+                    audioText.innerText = 'Music On';
+                    isPlaying = true;
+                }).catch(() => {});
+            }
+            document.removeEventListener('touchstart', startAudioOnInteraction);
+            document.removeEventListener('click', startAudioOnInteraction);
+        }
+        document.addEventListener('touchstart', startAudioOnInteraction, { once: true });
+        document.addEventListener('click', startAudioOnInteraction, { once: true });
+
+        /* Touch & Mouse Wand Sparkles */
+        function createSpark(x, y) {
+            if (Math.random() < 0.4) {
+                const spark = document.createElement('div');
+                spark.className = 'wand-spark';
+                spark.style.left = x + 'px';
+                spark.style.top = y + 'px';
+                document.body.appendChild(spark);
+                setTimeout(() => spark.remove(), 800);
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => createSpark(e.clientX, e.clientY));
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                createSpark(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: true });
+
+        /* Parse URL parameters for custom name support (?name=Hermione or ?nombre=Luna) */
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nameParam = urlParams.get('name') || urlParams.get('nombre');
+            
+            if (nameParam && nameParam.trim() !== '') {
+                const cleanName = nameParam.trim();
+                document.getElementById('recipient-name').innerText = cleanName;
+                document.getElementById('letter-recipient-name').innerText = cleanName;
+            } else {
+                document.getElementById('recipient-name').innerText = "A Very Special Witch";
+                document.getElementById('letter-recipient-name').innerText = "My Lady";
+            }
+        });
+
+        /* Open Envelope Logic */
+        let envelopeOpened = false;
+        function openEnvelope() {
+            if (envelopeOpened) return;
+            envelopeOpened = true;
+
+            const flap = document.getElementById('envelope-flap');
+            const seal = document.getElementById('envelope-seal');
+            const envelopeSec = document.getElementById('envelope-section');
+            const letterSec = document.getElementById('letter-section');
+
+            seal.style.transform = 'translate(-50%, -50%) scale(0)';
+            flap.style.transform = 'rotateX(180deg)';
+            flap.style.zIndex = '1';
+
+            setTimeout(() => {
+                envelopeSec.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => {
+                    envelopeSec.classList.add('hidden');
+                    letterSec.classList.remove('hidden');
+                    setTimeout(() => {
+                        letterSec.classList.remove('opacity-0', 'scale-95');
+                        letterSec.classList.add('opacity-100', 'scale-100');
+                    }, 50);
+                }, 400);
+            }, 500);
+        }
+
+        /* Playful Evasive NO Button Logic for both Touch & Hover */
+        const magicalExcuses = [
+            "Obliviate! Option erased!",
+            "The Sorting Hat says YES!",
+            "Dementor blocked NO!",
+            "Accio YES!",
+            "Protego! Button protected!",
+            "Expelliarmus to NO!",
+            "Petrificus Totalus!",
+            "Insufficient Mana for NO!"
+        ];
+
+        let excuseIndex = 0;
+        let noScale = 1;
+        const noBtn = document.getElementById('no-btn');
+        const noBtnText = document.getElementById('no-btn-text');
+
+        function evadeNoButton(e) {
+            if (e) e.preventDefault();
+
+            noBtnText.innerText = magicalExcuses[excuseIndex];
+            excuseIndex = (excuseIndex + 1) % magicalExcuses.length;
+
+            const randomX = (Math.random() - 0.5) * 180;
+            const randomY = (Math.random() - 0.5) * 90;
+
+            noBtn.style.position = 'relative';
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px) scale(${noScale})`;
+
+            if (noScale > 0.45) {
+                noScale -= 0.08;
+            }
+        }
+
+        noBtn.addEventListener('mouseenter', evadeNoButton);
+        noBtn.addEventListener('touchstart', evadeNoButton, { passive: false });
+        noBtn.addEventListener('click', evadeNoButton);
+
+        /* Accept Invitation & Confetti Celebration */
+        function acceptInvitation() {
+            const letterSec = document.getElementById('letter-section');
+            const celebrationSec = document.getElementById('celebration-section');
+
+            const cuisine = document.getElementById('cuisine-select').value;
+            const time = document.getElementById('time-select').value;
+
+            document.getElementById('summary-cuisine').innerText = cuisine;
+            document.getElementById('summary-time').innerText = time;
+
+            const targetPhone = "34624302215";
+            const message = encodeURIComponent(
+                `Hey! 🪄 I accepted your magical Hogwarts dinner date invitation!\n\n` +
+                `✨ Preference: ${cuisine}\n` +
+                `📅 Time: ${time}\n\n` +
+                `I solemnly swear we will have an amazing time! 🥂`
+            );
+            
+            document.getElementById('whatsapp-link').href = `https://wa.me/${targetPhone}?text=${message}`;
+
+            letterSec.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                letterSec.classList.add('hidden');
+                celebrationSec.classList.remove('hidden');
+                setTimeout(() => {
+                    celebrationSec.classList.remove('opacity-0');
+                    celebrationSec.classList.add('opacity-100');
+                    triggerMagicalConfetti();
+                }, 50);
+            }, 400);
+        }
+
+        /* Magical Gold & Burgundy Confetti Burst */
+        function triggerMagicalConfetti() {
+            const duration = 3 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 25, spread: 360, ticks: 60, zIndex: 999 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 40 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.1, 0.4), y: Math.random() - 0.2 },
+                    colors: ['#D4AF37', '#7A1C1C', '#FFF8C6', '#AA7C11']
+                }));
+                confetti(Object.assign({}, defaults, { 
+                    particleCount, 
+                    origin: { x: randomInRange(0.6, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#D4AF37', '#7A1C1C', '#FFF8C6', '#AA7C11']
+                }));
+            }, 250);
+        }
+
+        /* Star Background Canvas */
+        const canvas = document.getElementById('stars-canvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const stars = Array.from({ length: 65 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 1.8,
+            alpha: Math.random(),
+            speed: Math.random() * 0.02 + 0.005
+        }));
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.alpha += star.speed;
+                if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(212, 175, 55, ${Math.abs(star.alpha)})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+        drawStars();
+    </script>
+</body>
+</html>
