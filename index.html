@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invitación Mágica</title>
+  <title>Magical Dinner Invitation</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     * {
@@ -45,14 +45,19 @@
       z-index: 10;
     }
     .btn-audio {
-      background: rgba(212, 175, 55, 0.2);
+      background: rgba(212, 175, 55, 0.15);
       border: 1px solid #d4af37;
       color: #d4af37;
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: 20px;
       cursor: pointer;
       font-size: 14px;
       backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+    }
+    .btn-audio:hover {
+      background: rgba(212, 175, 55, 0.3);
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
     }
     /* Envelope Styles */
     .envelope-wrapper {
@@ -62,10 +67,11 @@
       padding: 40px 20px;
       box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
       cursor: pointer;
-      transition: transform 0.3s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .envelope-wrapper:hover {
       transform: scale(1.03);
+      box-shadow: 0 0 35px rgba(212, 175, 55, 0.5);
     }
     .seal {
       font-size: 50px;
@@ -86,6 +92,7 @@
       text-align: center;
       font-size: 24px;
       margin-bottom: 15px;
+      letter-spacing: 1px;
     }
     .letter p {
       line-height: 1.6;
@@ -109,6 +116,11 @@
       background: #12121c;
       color: #fff;
       font-size: 14px;
+      outline: none;
+    }
+    select:focus, input:focus {
+      border-color: #f39c12;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
     }
     .btn-container {
       position: relative;
@@ -124,10 +136,15 @@
       font-weight: bold;
       cursor: pointer;
       font-size: 15px;
+      transition: transform 0.2s;
     }
     .btn-yes {
       background: #d4af37;
       color: #0b0c10;
+    }
+    .btn-yes:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
     }
     .btn-no {
       background: #740001;
@@ -142,6 +159,7 @@
       border-radius: 12px;
       padding: 30px;
       text-align: center;
+      box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
     }
     .success-card h2 {
       color: #d4af37;
@@ -156,6 +174,11 @@
       text-decoration: none;
       border-radius: 25px;
       font-weight: bold;
+      box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
+      transition: transform 0.2s;
+    }
+    .whatsapp-btn:hover {
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -165,70 +188,70 @@
 
   <div class="header-controls">
     <button class="btn-audio" onclick="toggleAudio()">
-      <span id="audio-icon">⚡</span> <span id="audio-text">Música</span>
+      <span id="audio-icon">⚡</span> <span id="audio-text">Music</span>
     </button>
   </div>
 
   <div class="container">
-    <!-- Sobre Creado -->
+    <!-- Envelope -->
     <div id="envelope-wrapper" class="envelope-wrapper" onclick="openLetter()">
       <div class="seal">✉️</div>
-      <h2 style="color: #d4af37;">Tienes una lechuza pendiente</h2>
-      <p style="font-size: 13px; color: #aaa; margin-top: 8px;">Haz clic para abrir tu carta de Hogwarts</p>
+      <h2 style="color: #d4af37;">You have an owl pending</h2>
+      <p style="font-size: 13px; color: #aaa; margin-top: 8px;">Click to open your Hogwarts letter</p>
     </div>
 
-    <!-- Carta -->
+    <!-- Letter -->
     <div id="letter" class="letter">
       <h1>Hogwarts Invitation</h1>
-      <p>Estimada/o <strong id="witch-name" style="color: #d4af37;">Bruja/Mago</strong>,</p>
-      <p>Nos complace informarle que ha sido formalmente invitada/o a una cena mágica especial.</p>
+      <p>Dear <strong id="witch-name" style="color: #d4af37;">Beautiful Witch</strong>,</p>
+      <p>We are pleased to inform you that you have been formally invited to a magical dinner feast.</p>
       
       <div class="form-group">
-        <label for="cuisine">Selecciona el Festín:</label>
+        <label for="cuisine">Select the Feast:</label>
         <select id="cuisine">
-          <option value="Italiana Mágica">🍕 Italiana Mágica</option>
-          <option value="Sushi de las Tres Escobas">🍣 Sushi Mágico</option>
-          <option value="Hamburguesas del Gran Comedor">🍔 Festín del Gran Comedor</option>
-          <option value="Comida Mexicana">🌮 Comida Mexicana Mágica</option>
+          <option value="Magical Italian">🍕 Magical Italian</option>
+          <option value="Three Broomsticks Sushi">🍣 Three Broomsticks Sushi</option>
+          <option value="Great Hall Feast">🍔 Great Hall Feast</option>
+          <option value="Magical Mexican Food">🌮 Magical Mexican Food</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="availability">Día / Hora ideal:</label>
-        <input type="text" id="availability" placeholder="Ej: Este Viernes a las 21:00">
+        <label for="availability">Ideal Day / Time:</label>
+        <input type="text" id="availability" placeholder="e.g. This Friday at 9:00 PM">
       </div>
 
       <div class="btn-container" id="btn-container">
-        <button class="btn btn-yes" onclick="acceptInvitation()">¡Acepto! ✨</button>
-        <button class="btn btn-no" id="no-btn">No puedo 🦉</button>
+        <button class="btn btn-yes" onclick="acceptInvitation()">I Accept! ✨</button>
+        <button class="btn btn-no" id="no-btn">I can't 🦉</button>
       </div>
     </div>
 
-    <!-- Pantalla Final -->
+    <!-- Success Card -->
     <div id="success-card" class="success-card">
-      <h2>¡Invitación Aceptada! 🎉</h2>
-      <p>Tu lechuza ha sido enviada con los detalles de la cita.</p>
-      <p style="margin-top: 15px; font-size: 14px;"><strong>Festín:</strong> <span id="res-cuisine"></span></p>
-      <p style="font-size: 14px;"><strong>Fecha:</strong> <span id="res-time"></span></p>
+      <h2>Invitation Accepted! 🎉</h2>
+      <p>Your owl has been dispatched with the details of our date.</p>
+      <p style="margin-top: 15px; font-size: 14px;"><strong>Feast:</strong> <span id="res-cuisine"></span></p>
+      <p style="font-size: 14px;"><strong>Date:</strong> <span id="res-time"></span></p>
       
-      <a id="whatsapp-link" href="#" target="_blank" class="whatsapp-btn">Enviar confirmación por WhatsApp 📱</a>
+      <a id="whatsapp-link" href="#" target="_blank" class="whatsapp-btn">Confirm via WhatsApp 📱</a>
     </div>
   </div>
 
-  <!-- Audio -->
+  <!-- Audio Source -->
   <audio id="bg-music" loop preload="auto">
     <source src="harrypotter.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    // Parámetro nombre (?name=Nombre)
+    // URL Parameter Customization (?name=Her)
     const urlParams = new URLSearchParams(window.location.search);
-    const witchName = urlParams.get('name') || 'Invitada/o Especial';
+    const witchName = urlParams.get('name') || 'Beautiful Witch';
     document.getElementById('witch-name').innerText = witchName;
 
     const targetPhone = '34624302215';
 
-    // Audio
+    // Audio Controller
     const bgMusic = document.getElementById('bg-music');
     const audioIcon = document.getElementById('audio-icon');
     const audioText = document.getElementById('audio-text');
@@ -271,9 +294,16 @@
       letter.style.display = 'block';
     }
 
-    // Botón Evasivo
+    // Evasive "No" Button Spells
     const noBtn = document.getElementById('no-btn');
-    const spells = ["⚡ Obliviate!", "🪄 Accio SÍ!", "✨ Evanesco!", "🦉 Intenta de nuevo!"];
+    const spells = [
+      "⚡ Obliviate!", 
+      "🪄 Accio YES!", 
+      "✨ Evanesco!", 
+      "🦉 Try Again!", 
+      "📜 No Entry!", 
+      "🔮 Imperio!"
+    ];
 
     function moveNoButton() {
       const btnContainer = document.getElementById('btn-container');
@@ -302,14 +332,15 @@
       });
     }
 
+    // Accept Handler
     function acceptInvitation() {
       const cuisine = document.getElementById('cuisine').value;
-      const availability = document.getElementById('availability').value || 'Por definir';
+      const availability = document.getElementById('availability').value || 'To be decided';
 
       document.getElementById('res-cuisine').innerText = cuisine;
       document.getElementById('res-time').innerText = availability;
 
-      const message = `¡Hola! 🪄 Acepto la invitación mágica:\n\n🍲 Festín: ${cuisine}\n📅 Fecha/Hora: ${availability}\n\n¡Nos vemos pronto! ✨`;
+      const message = `Hello! 🪄 I accept your magical dinner invitation!\n\n🍲 Feast: ${cuisine}\n📅 Time: ${availability}\n\nSee you soon! ✨`;
       const encodedMsg = encodeURIComponent(message);
       
       document.getElementById('whatsapp-link').href = `https://wa.me/${targetPhone}?text=${encodedMsg}`;
@@ -322,7 +353,7 @@
       }
     }
 
-    // Canvas Estrellas
+    // Canvas Star Background Animation
     const canvas = document.getElementById('stars-canvas');
     const ctx = canvas.getContext('2d');
 
