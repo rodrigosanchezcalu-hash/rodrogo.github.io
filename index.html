@@ -1,25 +1,238 @@
-<!-- Local Audio File -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación Mágica</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #0b0c10;
+      color: #f0e6d2;
+      font-family: 'Georgia', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    #stars-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      width: 90%;
+      max-width: 450px;
+      text-align: center;
+    }
+    /* Controls Header */
+    .header-controls {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 10;
+    }
+    .btn-audio {
+      background: rgba(212, 175, 55, 0.2);
+      border: 1px solid #d4af37;
+      color: #d4af37;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      backdrop-filter: blur(5px);
+    }
+    /* Envelope Styles */
+    .envelope-wrapper {
+      background: #1a1a24;
+      border: 2px solid #d4af37;
+      border-radius: 12px;
+      padding: 40px 20px;
+      box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .envelope-wrapper:hover {
+      transform: scale(1.03);
+    }
+    .seal {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+    /* Letter Styles */
+    .letter {
+      display: none;
+      background: #1f1f2e;
+      border: 2px solid #d4af37;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+      text-align: left;
+    }
+    .letter h1 {
+      color: #d4af37;
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    .letter p {
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-size: 15px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      color: #d4af37;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    select, input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #d4af37;
+      background: #12121c;
+      color: #fff;
+      font-size: 14px;
+    }
+    .btn-container {
+      position: relative;
+      display: flex;
+      justify-content: space-around;
+      margin-top: 25px;
+      min-height: 50px;
+    }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 25px;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn-yes {
+      background: #d4af37;
+      color: #0b0c10;
+    }
+    .btn-no {
+      background: #740001;
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+    /* Success Card */
+    .success-card {
+      display: none;
+      background: #1f1f2e;
+      border: 2px solid #d4af37;
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+    }
+    .success-card h2 {
+      color: #d4af37;
+      margin-bottom: 15px;
+    }
+    .whatsapp-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #25D366;
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="stars-canvas"></canvas>
+
+  <div class="header-controls">
+    <button class="btn-audio" onclick="toggleAudio()">
+      <span id="audio-icon">⚡</span> <span id="audio-text">Música</span>
+    </button>
+  </div>
+
+  <div class="container">
+    <!-- Sobre Creado -->
+    <div id="envelope-wrapper" class="envelope-wrapper" onclick="openLetter()">
+      <div class="seal">✉️</div>
+      <h2 style="color: #d4af37;">Tienes una lechuza pendiente</h2>
+      <p style="font-size: 13px; color: #aaa; margin-top: 8px;">Haz clic para abrir tu carta de Hogwarts</p>
+    </div>
+
+    <!-- Carta -->
+    <div id="letter" class="letter">
+      <h1>Hogwarts Invitation</h1>
+      <p>Estimada/o <strong id="witch-name" style="color: #d4af37;">Bruja/Mago</strong>,</p>
+      <p>Nos complace informarle que ha sido formalmente invitada/o a una cena mágica especial.</p>
+      
+      <div class="form-group">
+        <label for="cuisine">Selecciona el Festín:</label>
+        <select id="cuisine">
+          <option value="Italiana Mágica">🍕 Italiana Mágica</option>
+          <option value="Sushi de las Tres Escobas">🍣 Sushi Mágico</option>
+          <option value="Hamburguesas del Gran Comedor">🍔 Festín del Gran Comedor</option>
+          <option value="Comida Mexicana">🌮 Comida Mexicana Mágica</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="availability">Día / Hora ideal:</label>
+        <input type="text" id="availability" placeholder="Ej: Este Viernes a las 21:00">
+      </div>
+
+      <div class="btn-container" id="btn-container">
+        <button class="btn btn-yes" onclick="acceptInvitation()">¡Acepto! ✨</button>
+        <button class="btn btn-no" id="no-btn">No puedo 🦉</button>
+      </div>
+    </div>
+
+    <!-- Pantalla Final -->
+    <div id="success-card" class="success-card">
+      <h2>¡Invitación Aceptada! 🎉</h2>
+      <p>Tu lechuza ha sido enviada con los detalles de la cita.</p>
+      <p style="margin-top: 15px; font-size: 14px;"><strong>Festín:</strong> <span id="res-cuisine"></span></p>
+      <p style="font-size: 14px;"><strong>Fecha:</strong> <span id="res-time"></span></p>
+      
+      <a id="whatsapp-link" href="#" target="_blank" class="whatsapp-btn">Enviar confirmación por WhatsApp 📱</a>
+    </div>
+  </div>
+
+  <!-- Audio -->
   <audio id="bg-music" loop preload="auto">
     <source src="harrypotter.mp3" type="audio/mpeg">
   </audio>
 
   <script>
-    // URL Parameter Customization (?name=Her)
+    // Parámetro nombre (?name=Nombre)
     const urlParams = new URLSearchParams(window.location.search);
-    const witchName = urlParams.get('name') || 'Beautiful Witch';
+    const witchName = urlParams.get('name') || 'Invitada/o Especial';
     document.getElementById('witch-name').innerText = witchName;
 
     const targetPhone = '34624302215';
 
-    // CONTROLES DE AUDIO
+    // Audio
     const bgMusic = document.getElementById('bg-music');
-    const audioToggle = document.getElementById('audio-toggle');
     const audioIcon = document.getElementById('audio-icon');
     const audioText = document.getElementById('audio-text');
     let isPlaying = false;
-
-    // Cargar el audio
-    bgMusic.load();
 
     function playAudio() {
       bgMusic.volume = 0.7;
@@ -28,9 +241,9 @@
         playPromise.then(() => {
           isPlaying = true;
           if (audioIcon) audioIcon.innerText = '🎶';
-          if (audioText) audioText.innerText = 'Music On';
+          if (audioText) audioText.innerText = 'On';
         }).catch(err => {
-          console.log("Audio play blocked:", err);
+          console.log("Audio play error:", err);
         });
       }
     }
@@ -39,7 +252,7 @@
       bgMusic.pause();
       isPlaying = false;
       if (audioIcon) audioIcon.innerText = '⚡';
-      if (audioText) audioText.innerText = 'Music Off';
+      if (audioText) audioText.innerText = 'Off';
     }
 
     function toggleAudio() {
@@ -50,31 +263,17 @@
       }
     }
 
-    // Abrir carta y reproducir sonido inmediatamente al hacer clic
     function openLetter() {
       playAudio();
-
       const envelopeWrapper = document.getElementById('envelope-wrapper');
       const letter = document.getElementById('letter');
-
-      envelopeWrapper.classList.add('open');
-      
-      setTimeout(() => {
-        envelopeWrapper.style.display = 'none';
-        letter.style.display = 'block';
-      }, 700);
+      envelopeWrapper.style.display = 'none';
+      letter.style.display = 'block';
     }
 
-    // Botón evasivo "No"
+    // Botón Evasivo
     const noBtn = document.getElementById('no-btn');
-    const spells = [
-      "⚡ Obliviate!", 
-      "🪄 Accio YES!", 
-      "✨ Evanesco!", 
-      "🦉 Try Again!", 
-      "📜 No Entry!", 
-      "🔮 Imperio!"
-    ];
+    const spells = ["⚡ Obliviate!", "🪄 Accio SÍ!", "✨ Evanesco!", "🦉 Intenta de nuevo!"];
 
     function moveNoButton() {
       const btnContainer = document.getElementById('btn-container');
@@ -82,10 +281,10 @@
       const btnRect = noBtn.getBoundingClientRect();
 
       const maxX = containerRect.width - btnRect.width;
-      const maxY = 150; 
+      const maxY = 100; 
 
-      const randomX = Math.floor(Math.random() * maxX);
-      const randomY = Math.floor(Math.random() * maxY) - 50;
+      const randomX = Math.floor(Math.random() * Math.max(maxX, 10));
+      const randomY = Math.floor(Math.random() * maxY) - 30;
 
       noBtn.style.position = 'absolute';
       noBtn.style.left = `${randomX}px`;
@@ -103,54 +302,27 @@
       });
     }
 
-    // Aceptar invitación
     function acceptInvitation() {
       const cuisine = document.getElementById('cuisine').value;
-      const availability = document.getElementById('availability').value;
+      const availability = document.getElementById('availability').value || 'Por definir';
 
       document.getElementById('res-cuisine').innerText = cuisine;
       document.getElementById('res-time').innerText = availability;
 
-      const message = `Hello! 🪄 I accept your magical dinner invitation!\n\n🍲 Feast: ${cuisine}\n📅 Time: ${availability}\n\nSee you soon! ✨`;
+      const message = `¡Hola! 🪄 Acepto la invitación mágica:\n\n🍲 Festín: ${cuisine}\n📅 Fecha/Hora: ${availability}\n\n¡Nos vemos pronto! ✨`;
       const encodedMsg = encodeURIComponent(message);
       
-      const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodedMsg}`;
-      document.getElementById('whatsapp-link').href = whatsappUrl;
+      document.getElementById('whatsapp-link').href = `https://wa.me/${targetPhone}?text=${encodedMsg}`;
 
       document.getElementById('letter').style.display = 'none';
       document.getElementById('success-card').style.display = 'block';
 
-      launchConfetti();
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
     }
 
-    // Confeti
-    function launchConfetti() {
-      const duration = 3 * 1000;
-      const end = Date.now() + duration;
-
-      (function frame() {
-        confetti({
-          particleCount: 4,
-          angle: 60,
-          spread: 55,
-          origin: { x: 0 },
-          colors: ['#d4af37', '#740001', '#ffffff']
-        });
-        confetti({
-          particleCount: 4,
-          angle: 120,
-          spread: 55,
-          origin: { x: 1 },
-          colors: ['#d4af37', '#740001', '#ffffff']
-        });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      })();
-    }
-
-    // Fondo de estrellas
+    // Canvas Estrellas
     const canvas = document.getElementById('stars-canvas');
     const ctx = canvas.getContext('2d');
 
@@ -161,10 +333,10 @@
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    const stars = Array.from({ length: 60 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      radius: Math.random() * 1.8,
+    const stars = Array.from({ length: 50 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      radius: Math.random() * 1.5,
       alpha: Math.random(),
       speed: Math.random() * 0.02 + 0.005
     }));
@@ -174,7 +346,6 @@
       stars.forEach(star => {
         star.alpha += star.speed;
         if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
-
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(212, 175, 55, ${Math.abs(star.alpha)})`;
@@ -184,3 +355,5 @@
     }
     drawStars();
   </script>
+</body>
+</html>
