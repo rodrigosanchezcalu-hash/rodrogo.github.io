@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>An Official Invitation from Hogwarts</title>
   
-  <!-- Google Fonts: Cinzel Decorative, MedievalSharp, Montserrat -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=MedievalSharp&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
@@ -434,9 +434,9 @@
   <!-- Background Stars Canvas -->
   <canvas id="stars-canvas"></canvas>
 
-  <!-- High-Quality Audio Element -->
-  <audio id="bg-music" loop crossorigin="anonymous">
-    <source src="https://ia800508.us.archive.org/28/items/HarryPotterThemeSongHedwigsTheme/Harry%20Potter-%20Theme%20Song%20%28Hedwig%27s%20Theme%29.mp3" type="audio/mpeg">
+  <!-- Local Audio File -->
+  <audio id="bg-music" loop preload="auto">
+    <source src="harrypotter.mp3" type="audio/mpeg">
   </audio>
 
   <!-- Fixed Audio Toggle Button -->
@@ -539,7 +539,7 @@
     // Target WhatsApp Phone Number
     const targetPhone = '34624302215';
 
-    // REAL MP3 AUDIO CONTROLLER
+    // LOCAL MP3 AUDIO CONTROLLER
     const bgMusic = document.getElementById('bg-music');
     const audioToggle = document.getElementById('audio-toggle');
     const audioIcon = document.getElementById('audio-icon');
@@ -547,13 +547,13 @@
     let isPlaying = false;
 
     function playAudio() {
-      bgMusic.volume = 0.5; // Comfortable volume
+      bgMusic.volume = 0.6;
       bgMusic.play().then(() => {
         isPlaying = true;
         audioIcon.innerText = '🎶';
         audioText.innerText = 'Music On';
       }).catch(err => {
-        console.log("Audio autoplay prevented", err);
+        console.log("Audio block:", err);
       });
     }
 
@@ -572,7 +572,7 @@
       }
     }
 
-    // Trigger audio start seamlessly on first click or touch
+    // Trigger sound on tap
     function handleFirstUserTouch() {
       if (!isPlaying) {
         playAudio();
@@ -585,7 +585,7 @@
 
     // Open Letter Animation
     function openLetter() {
-      playAudio(); // Ensures sound starts when envelope is tapped
+      playAudio();
       const envelopeWrapper = document.getElementById('envelope-wrapper');
       const letter = document.getElementById('letter');
 
@@ -627,7 +627,6 @@
       noBtn.innerText = randomSpell;
     }
 
-    // Support both Touch (iPhone) and Hover (Desktop)
     noBtn.addEventListener('mouseenter', moveNoButton);
     noBtn.addEventListener('touchstart', function(e) {
       e.preventDefault();
@@ -653,7 +652,6 @@
       document.getElementById('letter').style.display = 'none';
       document.getElementById('success-card').style.display = 'block';
 
-      // Magical Confetti Burst
       launchConfetti();
     }
 
